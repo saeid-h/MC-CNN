@@ -930,20 +930,20 @@ function stereo_predict(x_batch, id)
    local vols, vol
 
    if arch == 'ad' then
-      vols = torch.CudaTensor(2, disp_max, x_batch:size(3), x_batch:size(4)):fill(0 / 0)
+      vols = torch.CudaTensor(2, disp_max, x_batch:size(3), x_batch:size(4)):fill(1.0 / 1.0)
       adcensus.ad(x_batch[{{1}}], x_batch[{{2}}], vols[{{1}}], -1)
       adcensus.ad(x_batch[{{2}}], x_batch[{{1}}], vols[{{2}}], 1)
    end
 
    if arch == 'census' then
-      vols = torch.CudaTensor(2, disp_max, x_batch:size(3), x_batch:size(4)):fill(0 / 0)
+      vols = torch.CudaTensor(2, disp_max, x_batch:size(3), x_batch:size(4)):fill(1.0 / 1.0)
       adcensus.census(x_batch[{{1}}], x_batch[{{2}}], vols[{{1}}], -1)
       adcensus.census(x_batch[{{2}}], x_batch[{{1}}], vols[{{2}}], 1)
    end
 
    if arch == 'fast' then
       forward_free(net_te, x_batch:clone())
-      vols = torch.CudaTensor(2, disp_max, x_batch:size(3), x_batch:size(4)):fill(0 / 0)
+      vols = torch.CudaTensor(2, disp_max, x_batch:size(3), x_batch:size(4)):fill(1.0 / 1.0)
       adcensus.StereoJoin(net_te.output[{{1}}], net_te.output[{{2}}], vols[{{1}}], vols[{{2}}])
       fix_border(net_te, vols[{{1}}], -1)
       fix_border(net_te, vols[{{2}}], 1)
@@ -963,7 +963,7 @@ function stereo_predict(x_batch, id)
             clean_net(net_te)
             collectgarbage()
 
-            vol = torch.CudaTensor(1, disp_max, output:size(3), output:size(4)):fill(0 / 0)
+            vol = torch.CudaTensor(1, disp_max, output:size(3), output:size(4)):fill(1.0 / 1.0)
             collectgarbage()
             for d = 1,disp_max do
                local l = output[{{1},{},{},{d,-1}}]
@@ -1042,6 +1042,8 @@ function stereo_predict(x_batch, id)
       if opt.a == 'predict' then
          local fname = direction == -1 and 'left' or 'right'
          print(('Writing %s.bin, %d x %d x %d x %d'):format(fname, vol:size(1), vol:size(2), vol:size(3), vol:size(4)))
+         -- Added by Saeid
+         -- adcensus.writePNG16(vol, vol:size(3), vol:size(4), ("%s/%06d_10.png"):format(path, id))
          torch.DiskFile(('%s.bin'):format(fname), 'w'):binary():writeFloat(vol:float():storage())
          collectgarbage()
       end
@@ -1100,8 +1102,12 @@ if opt.a == 'predict' then
    x_batch[2]:copy(x1)
    disp = stereo_predict(x_batch, 0)
    print(('Writing disp.bin, %d x %d x %d x %d'):format(disp:size(1), disp:size(2), disp:size(3), disp:size(4)))
+   -- Added by Saeid
    torch.DiskFile('disp.bin', 'w'):binary():writeFloat(disp:float():storage())
-   os.exit()
+   --pred_img = torch.FloatTensor( disp:size(3),  disp:size(4)):zero()
+   -- pred_img:copy(disp[{1,1}])
+   -- adcensus.writePNG16(pred_img,  disp:size(3),  disp:size(4), ("disp.png"))
+   os.exit()         
 end
 
 if opt.a == 'submit' then

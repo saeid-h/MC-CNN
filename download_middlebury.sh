@@ -1,5 +1,7 @@
 #! /bin/sh
 
+#test 
+
 mkdir -p data.mb/unzip
 cd data.mb/unzip
 
