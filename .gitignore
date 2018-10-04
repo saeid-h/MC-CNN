@@ -1,3 +1,54 @@
+# Compiled Lua sources
+luac.out
+
+# luarocks build files
+*.src.rock
+*.zip
+*.tar.gz
+
+# Object files
+*.o
+*.os
+*.ko
+*.obj
+*.elf
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+*.def
+*.exp
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Git folders and files
+hooks/
+info/
+objects/
+config
+description
+packed-refs
+HEAD
+
+#Jure's gitinti
 Makefile
 data.*
 png16
@@ -17,3 +68,16 @@ net
 *.pkl
 *.md
 *.pyc
+
+#My files and folders
+make_disparity.py
+test.py
+pfmutil.py
+kitti12_disparity.py
+kitti15_disparity.py
+freiburg_disparity.py
+
+
+
+
+
